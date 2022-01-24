@@ -35,9 +35,9 @@ Compute Engine is a good option when you need maximum control over VM instances 
 gcloud compute project-info describe
 
 ## List your VMs
-**gcloud compute instances list**
+gcloud compute instances list
 
-**gcloud compute instances create** ace-instance-n1s8 --machine-type=n1-standard-8
+gcloud compute instances create ace-instance-n1s8 --machine-type=n1-standard-8
 
 **gcloud compute instances** stop INSTANCE-NAME
 
