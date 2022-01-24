@@ -1,0 +1,254 @@
+# Practice Questions Learnings
+
+- If you are a **Project Owner IAM role**, you can **shutdown entire project** from GCP console
+    - useful to cut costs quickly and shut down multiple services
+- Read access to data in a different project
+    - make sure the service account has appropriate permissions
+    - Company A - give access to the Company B group
+    - Company B group, give access to the service
+- **Custom roles include a launch stage**, which is stored in the stage property for the role. The launch stage is informational; it helps you keep track of whether each role is ready for widespread use. **ALPHA** means the role is still being developed or tested, or it includes permissions for Google Cloud services or features that are not yet public. It is not ready for widespread use.
+- **Managing multiple projects using** `gcloud`
+    - Create a **configuration** for each project
+    - Activate the appropriate configuration when you are working with it
+- Your managed instance group raised an alert stating that new instance creation has **failed to create new instances**
+    - It is probably why the persistent disk has the same name and it cannot recreate it
+    - Validate syntax
+    - set *disks.autoDelete* to *true*
+- launching **Cassandra** from the marketplace is the fastest and safest way
+    - similar for other services like that, use Marketplace
+- You can resize Cloud Spanner from a Cloud Function
+    - Cloud Spanner does not auto-scale, but there is an open source tool to do that
+    - useful we can have alerts on CPU spikes, and have a script that scales accordingly
+- If you want more advance billing, export to BigQuery and analyze charges, have a script to check and notify
+- You have an application that receives **SSL-encrypted TCP traffic on port 443.** Clients for this application are located all over the world. You want to minimize latency for the clients.
+    - Because it is **TCP**
+    - We need **SSL Proxy**
+        - SSL Proxy Load Balancing is a reverse proxy load balancer that distributes SSL traffic coming from the internet to virtual machine (VM) instances in your Google Cloud VPC network.
+    - Minimize latency for global users means SSL offloading close to those users while sending the traffic as much through the Google network as possible as opposed to over the internet. This means we need to use SSL Load Balancer.
+- Local SSD if faster that Zonal SSD
+    - if this is a bottleneck we can switch to local for faster reads
+- If  "**There are no private IP addresses available in the VPC network**"
+    - remember that you can expand the range!
+- Remember: to view the Logs on **Cloud Logging**, you need to install the **agent**
+    - Don't assume this has happened
+- Cloud Storage is not part of the VPC
+- Compute Engine VMs have a default service account, you can use that, no need to create a new one
+- How to set a default project
+    - `gcloud config set project`
+    - Remember - this will apply to other commands like `bq` (they don't have their own ways of specifying versions)
+    - as well as App Engine deployments
+- In Kubernetes if you want Deployment A to access Deployment B, without public access
+    - Create a Service of type **ClusterIP** for Deployment A. Have Deployment B use the Service IP address
+- Google recommends using **Groups** where possible
+    - For permissions to multiple users
+- Only create a custom role if you have to
+    - For example for Viewers, there is a Primitive Role we can use
+- Cloud VPN to connect GCP with on-premises
+- **Data Catalog** allows you to discover, manage, and understand data assets across Google Cloud Platform.
+    - **Data Catalog** API natively indexes Cloud BigQuery, Cloud Storage, and Cloud Pub/Sub data assets.
+- the reasons for a Pod Status **'Pending'** are:
+    - Not enough CPU, Not enough memory, Not enough CPU and memory
+- BigQuery has also a **flat rate pricing**
+    - could be suitable if costs are high with queries
+    - alongside with setting quotas
+- **GKE Sandbox protects the host kernel** on your nodes when containers in the Pod execute unknown or untrusted code.
+- **Cloud Spanner** - you should be careful when choosing a primary key to not accidentally create hotspots in your database. One cause of hotspots is having a column whose value monotonically increases as the first key part because this results in all inserts This pattern is desirable because **Cloud Spanner divides data among servers by key ranges,** which means all your inserts will be directed at a single server that will end up doing all the work.
+- **Compute Engine instance have Delete Protection**
+    - to prevent other users/teams from deleting them
+- Preemptible is not a good solution for long running tasks
+    - Google can take them away with 30 sec notice
+    - max lifetime is 25 hours
+- To speed time, you can use `gcloud config set` to set the default zone
+- Monitoring across different projects (CPU, Memory & Disk)
+    - Create a Workspace for Project A
+    - Add Project B & Project C to the workspace
+- **Deployment Manager -** we can have infrastructure as code in YAML
+    - Ideally store them on storage bucket and not on repo if they contain sensitive information
+- **BigQuery** has support for **external tables**
+    - we can use it to join information from different databases/services, for example Cloud Storage
+    - example 5TB AVRO file
+- `gcloud projects get-iam-policy example-project-id-1`
+    - check the roles of a project
+    - check who has what role in a project
+- If someone wants to work on your VMs and does not have Google Account
+    - best ask them to generate SSH Keys and add them into your VMs
+    - ⭐  when we deal with multiple accounts and have Google account
+        - os login is the easiest way to grant access to individual VMs to users without SSH keys.
+        - *enable os-login compute.osLogin role*
+        - if they already have Google Account
+            - Ask each member to create an SSH key, and add it to their google acccount and give them **compute.osAdminLogin**
+- **Cloud DNS - private zone**
+    - That can give us a DNS name, that we can use internally (GCP & on-premises)
+    - so even if the IP address of a service changes, we can use that
+- **Cloud Run**
+    - Container Deployments
+    - **will only charge you for the services you use** vs App Engine flexible, that will charge you even if you have no visitors, as it needs your app to keep running - it does not scale down to zero when not in use
+    - Cloud Run for Anthos
+        - to do Canary Deployments, you need to create a new revision within the same application
+- **Access between projects on different organisations**
+    - Service Accounts to the rescue!
+    - if they want access to our data
+        - they create a service account, we give access to that service account
+        - Ask the partner company to create a service account in their project, and grant permissions to their service account to access BigQuery in our project
+- **External Network Load Balancer** exposes the traffic to the internet and it supports **UDP**.
+- `gcloud auth activate-service-account`
+    - and point to the key to authenticate and get access to services
+- CloudSQL backups are managed separately and are stored in Cloud Storage Bucket
+    - we can set retention policies on that
+- **Type Provider in Deployment Manager:** If you want to use an **API that is not automatically provided** by Google with Deployment Manager, you must add the API as a **Type provider**
+- You want to find out why the pod is stuck in pending status. What should you do?
+    - review details of the specific pod and check for warnings
+- RDP login (like ssh for windows machines)
+    - gcloud compite reset-windows-password to retrieve login credentials
+- **Produce a list of the enabled Google Cloud Platform APIs** for a GCP project using the gcloud command line
+    - `gcloud projects list` (to get the project id)
+    - `gcloud services list — <projectID>`
+- Google Kubernetes Engine with autoscaling enabled to host a new application. You want to expose this new application to the public, using HTTPS on a public IP address
+    - NodePort & Kubernetes Ingress to expose this service via Cloud Load Balancer
+- to enable traffic between multiple groups of Compute Engine instances that are currently running two different GCP projects
+    - use a shared VPC
+- You need to create a new **Kubernetes Cluster** on Google Cloud Platform that can **autoscale the number of worker node**s. What should you do?
+    - Create a Cluster on Kubernetes Engine, and enable auto-scaling
+- You want to create a **new role** for your colleagues that will a**pply to all current and future projects created in your organization**.
+    - Select both roles and merge them into a Custom Role (organisation level)
+- `gcloud config list`
+    - it will show us the *zone/project* we have available by default
+- n1-standard-**8**
+    - *8 → refers to the number of vCPUs*
+- BigQuery JobUser vs BigQuery dataViewer
+    - **BigQuery job user** role Provides permissions to run jobs, including queries, within the project.
+    - **dataViewer** tool does not allow users to perform queries.
+- Application deployed as a managed instance group. You have a new version of the application to gradually deploy. Your web application is currently receiving live web traffic. You want to ensure that the available capacity does not decrease during the deployment.
+    - rolling-action start-update
+    - maxSurge to 1
+    - maxUnavailable to 0
+- GKE loadBalander internal, and peer VPCs to connect internally to another application
+- When you acquire a company link their account to your account to get both in a single invoice
+- **You need to create a custom VPC with a single subnet. The subnet's range must be as large as possible. Which range should you use?**
+    - **0.0.0.0/8**
+        - ⭐  don't get confused with ***0.0.0.0/0 (this is for firewall rules)***
+- ⭐  **gcloud container clusters resize**
+    - when you want to add one more Node to a Kubernetes Cluster
+- Cloud SQL (MySQL). Verify that the **enable binary logging option** is selected.
+    - Allows restore back to point in time
+- **configure Auto-healing for network load balancing for a group of Compute Engine instances**
+    - Managed Instance group → Set the Auto-healing health check to check healthy HTTP
+- **kubectl use-context & kubectl config view**
+    - to view the configuration of a Kubernetes Engine Cluster
+- App Engine
+    - min_iddle_instances: minimum unoccupied instances to always run
+- `gcloud iam roles copy`
+    - and provide the new project as the destination
+    - helpful to move roles from dev to prod project
+    - move roles between projects
+- Update a deployment in Deployment Manager without any resource downtime in the deployment
+    - `gcloud deployment-manager deployments update --config <depolyment-config-path>`
+- **It is considered best practice to group people requiring similar permissions to a google group and assigning roles to the group instead of individual users.**
+- each node of the cluster will run a monitoring pod that sends container metrics to a third-party monitoring solution
+    - **DeamonSet**
+    - a daemonset gets deployed to every node in the cluster.
+- ⭐ **Only 1 App Engine application in a GCP project.**
+    - If you want to create a new, it needs to be on a new project
+- **Node Auto-Upgrades**: Get the latest Kubernetes version
+- Kubernetes: store env variables in **Secrets**
+- A team of data scientists **infrequently** needs to use a Google Kubernetes Engine (GKE) cluster that you manage. They require GPUs for some **long-running**, **non-restartable jobs**. You want to minimize cost. What should you do?
+    - **Node auto-provisioning** is a mechanism of the cluster autoscaler, which scales on a per-node pool basis. With node auto-provisioning enabled, the cluster autoscaler can extend node pools automatically based on the specifications of unschedulable Pods.
+- **Migrate dev → prod** (without networking between them)
+    - **Create a new project** → Enable the services you need → replicate dev setup
+    - keep them separate to isolate the environments
+- **BigQuery** has support for **table expiration**
+- Image from Snapshot, Instance from Image
+    - Snapshot → Image → Instance
+- We don't add a service account to an application, instead we assign the permissions we need to that service account
+- Store for **analytics** = **BigQuery**!
+- How do I know if a role exists?
+    - If a role is mentioned, we can assume that it probably exists
+- Tip: if there are groups of similar questions, try to eliminate one group
+- Look for common patters in the questions
+- Setting the
+    - `gcloud config set compute/region eurote-west1`
+    - Default configurations are set with the `gcloud config set` command
+- Cloud Shell is per user for the entire project
+- **Managed Instance Groups**
+    - are identical VMs
+    - VM based on an instance template
+    - All VMs will be similar
+- We connect a **HTTP(s) Load Balancer** with an **Instance Group** and it will scale based on load
+- The Backend of a load balancer can be a Storage Bucket, if we are service static data
+- GKE - Enabling Logging/Monitoring (this has been updated recently - it is now called monitoring)
+- **Compute Engine** scales using **Managed Instance Groups**
+- **Kubernetes Engine** scales using **Node Pools**
+- **Kubernetes Engine** uses **Node Pools**
+    - and not Managed Instance Groups!
+- **GKE** has build in feature for auto-scaling working Nodes
+- **BigQuery** is **NOT a transactional** database
+- If you want to add an extra node to Kubernetes
+    - this needs to *managed externally of Kubernetes using gcloud*
+        - `gcloud container cluster resize`
+- *gcloud is used to create clusters, node-pools, resize node-pools etc*
+- To View who has Owner permissions for a project
+    - remember this is on a project level, not organisation level
+    - Go to the IAM page for that project
+    - apply the filter
+- Viewing the assigned Permissions to an IAM role
+    - Use GCP Console - IAM section
+- **If we put services into different subnets, it does NOT isolate them, services on different subnets can talk to each other!**
+    - what is because services within a project that belong to the same VPC they can talk to each other
+- Use **firewall rules** to constrain traffic flow between services
+- Use `gsutil` for transferring data
+
+## **Networking Options in GCP**
+
+Networking is one of the most important topics that come in the exam. I would highly recommend to read more about it and understand it.
+
+- **Virtual Private Cloud (VPC):** *Private Cloud that you manage in Google Cloud where you can run your resources. They have VPC networks associated with them and the networks are highly scalable, global and flexible.*
+- **Virtual Private Network (VPN)**: *Network abstraction that allows you to secure the network and transmit data across the internet using secure IP or IPsec.*
+- **Cloud Router**: *It enables your GCP resources to communicate with your non-GCP resources like resources deployed in on-premises by exchanging routes using Border Gateway Protocol (BGP).*
+- **VPC Peering:** *Private communication links between VPCs in different organizations (remember Resource Hierarchy).*
+- **Shared VPC**: *Sharing VPC across resources within the same organization.*
+- **Cloud Interconnect**: *Service that links resources in VPCs to an on-premises data centre. Can be a Direct Connection (Dedicated) or via 3rd Party (Partner)*
+- **Firewalls**: *Rules that control the flow of traffic in networks across networks*
+- **Cloud CDN**: *Allows you to cache objects closest to the user thereby reducing latency.*
+- **Cloud Load Balancing**: *Scaling up and down of backend instances on the upcoming traffic.*
+
+---
+
+Load Balancers
+
+![choose-lb.svg](Practice%20Questions%20Learnings%20c82c1713b9d145fbb899a03dd5e02f78/choose-lb.svg)
+
+- You have been asked to create a network with **1,000 IP addresses**. In the interest of minimizing unused IP addresses, which CIDR suffix would you use to create a network with at least 1,000 address but no more than necessary?
+    - The /22 suffix produces 1,022 usable IP addresses.
+    - The /20 suffix produces 1,000 usable IP addresses.
+
+- **Delete an instance group** template
+    - `glcoud compute instance-templates delete`
+- Detailed description of each of those containers
+    - `gcloud container images describe`
+- You are using gcloud to create a firewall rule. Which command would you use?
+    - `gcloud compute firewall-rules create`
+- What command is used to **expand the number of addresses in a subnet**?
+    - `gcloud compute networks subnets expand-ip-range`
+
+- **Dataflow** is a pipeline service for processing streaming and batch data that implements workflows used by Cloud Spanner
+- **All users can create projects by default**
+- Assign roles to a member
+    - `gcloud projects add-iam-policy-binding`
+- Cloud functions command
+    - `gcloud functions deploy`
+- Creating A VPN
+    - `gcloud compute-targe-vpn-gateways`
+    - `gcloud compute forwarding rules`
+    - `gcloud compute vpn-tunnels`
+- `gcloud app services set-traffic s1 --splits=v2=1`
+- `gsutil rewrite -s`
+    - to switch the storage from one type to another
+- **BigQuery** datasets are stored by **region**
+- **Virtual Machines are billed per second**
+- `gcloud container clusters get-credentials`
+    - generate configuration file to talk to the Kubernetes cluster
+- **Sole Tenancy:** no other cloud customer should have virtual machines running on the same physical server as your virtual machines
+- `gcloud compute networks subnets expand-ip-range`
+- `gcloud compute instance-templates create`
+    - To create instance templates
+- Deployment Manager provides a preview functionality to review the changes in infrastructure before applying updates.
