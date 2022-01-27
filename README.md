@@ -39,11 +39,11 @@ gcloud compute instances list
 
 gcloud compute instances create ace-instance-n1s8 --machine-type=n1-standard-8
 
-**gcloud compute instances** stop INSTANCE-NAME
+gcloud compute instances stop INSTANCE-NAME
 
-**gcloud compute instances start**  INSTANCE_NAMES
-**gcloud compute instances start**  ch06-instance-1 ch06-instance-2 --async
-**gcloud compute instances start**  ch06-instance-1 ch06-instance-2 **--zone us-central1-c
+gcloud compute instances start  INSTANCE_NAMES
+gcloud compute instances start  ch06-instance-1 ch06-instance-2 --async
+gcloud compute instances start  ch06-instance-1 ch06-instance-2 **--zone us-central1-c
 
 # Snapshots
 gcloud compute snapshots describe SNAPSHOT_NAME
