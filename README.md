@@ -620,9 +620,3 @@ The zones within a region are linked by low-latency, high-bandwidth network conn
 # You can get a list of zones with the following command:
 gcloud compute zones list
 ```
-
-[Practice Questions Learnings](https://www.notion.so/Practice-Questions-Learnings-055def161ca04154af698701b8fcc533)
-
-[Google Best Practices](https://www.notion.so/Google-Best-Practices-c6dc248ca612435abf8c0660caece8f3)
-
-[Google Associate Cloud Engineer notes · pistocop](https://www.notion.so/Google-Associate-Cloud-Engineer-notes-pistocop-154789dbd4ad48ddbce615edd1294b74)
